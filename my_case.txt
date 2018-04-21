@@ -1,0 +1,15 @@
+_main[]
+	int a, g,h,x;
+	real b,z;
+	int u,v;
+	z = ((a -g) *(h+u))+((13-a)*(u+g));
+	g = ((a -g) *(h+u))-((10+a)*(u+g));
+	
+end;
+
+#Semantic errors
+#line 7: type mismatch errors
+#line 9: type mismatch error
+#line 15: type mismatch error
+#line 18: type mismatch error
+#line 20: type mismatch error

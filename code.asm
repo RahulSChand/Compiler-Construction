@@ -1,0 +1,138 @@
+%include 'printing_reading.asm'
+section .bss
+nline	RESB	1
+tempIp	RESB	20
+baseOfStack	RESB	1
+
+section .text
+global _start
+_start:
+MOV EBP,baseOfStack
+MOV AL,0AH
+MOV EBX,nline
+MOV [EBX],AL
+MOV AX,10
+MOV [EBP + 16],AX
+
+MOV AX,[EBP + 16]
+MOV [EBP + 0],AX
+
+MOV AX,20
+MOV [EBP + 18],AX
+
+MOV AX,[EBP + 18]
+MOV [EBP + 2],AX
+
+MOV AX,30
+MOV [EBP + 20],AX
+
+MOV AX,[EBP + 20]
+MOV [EBP + 4],AX
+
+MOV AX,12
+MOV [EBP + 22],AX
+
+MOV AX,[EBP + 22]
+MOV [EBP + 8],AX
+
+MOV AX,34
+MOV [EBP + 24],AX
+
+MOV AX,[EBP + 24]
+MOV [EBP + 10],AX
+
+MOV AX,11
+MOV [EBP + 26],AX
+
+MOV AX,[EBP + 26]
+MOV [EBP + 12],AX
+
+MOV AX,[EBP + 0]
+MOV BX,15
+CMP AX,BX
+JL L3
+JMP L2
+
+L3:
+MOV AX,[EBP + 8]
+MOV BX,[EBP + 10]
+CMP AX,BX
+JLE L1
+JMP L2
+
+L1:
+MOV AX,[EBP+0]
+MOV BX,[EBP+2]
+ADD AX,BX
+MOV [EBP+28],AX
+
+MOV AX,10
+MOV [EBP + 30],AX
+
+MOV AX,[EBP+30]
+MOV BX,[EBP+4]
+ADD AX,BX
+MOV [EBP+32],AX
+
+MOV AX,8
+MOV [EBP + 34],AX
+
+MOV AX,[EBP+32]
+MOV BX,[EBP+34]
+SUB AX,BX
+MOV [EBP+36],AX
+
+MOV AX,2
+MOV [EBP + 38],AX
+
+MOV AX,[EBP+36]
+MOV BX,[EBP+38]
+ADD AX,BX
+MOV [EBP+40],AX
+
+MOV AX,[EBP+40]
+MOV BX,[EBP+0]
+SUB AX,BX
+MOV [EBP+42],AX
+
+MOV AX,[EBP+28]
+MOV BX,[EBP+42]
+SUB AX,BX
+MOV [EBP+44],AX
+
+MOV AX,[EBP + 44]
+MOV [EBP + 14],AX
+
+MOV AX,2
+MOV [EBP + 46],AX
+
+MOV AX,[EBP+0]
+MOV BX,[EBP+46]
+MUL BX
+MOV [EBP+48],AX
+
+MOV AX,[EBP+14]
+MOV BX,[EBP+48]
+ADD AX,BX
+MOV [EBP+50],AX
+
+MOV AX,[EBP + 50]
+MOV [EBP + 6],AX
+
+JMP L0
+
+L2:
+MOV AX,0
+MOV [EBP + 52],AX
+
+MOV AX,[EBP + 52]
+MOV [EBP + 6],AX
+
+L0:
+XOR EAX,EAX
+MOV AX,[EBP + 6]
+CALL iprintLF
+
+MOV EAX,1
+MOV EBX,0
+INT 80H

@@ -1,0 +1,88 @@
+mainFunction ===> MAIN SQO SQC stmtsAndFunctionDefs END
+stmtsAndFunctionDefs ===> stmtOrFunctionDef xstmt
+xstmt ===> stmtsAndFunctionDefs
+xstmt ===> null
+stmtOrFunctionDef ===> stmt
+stmtOrFunctionDef ===> functionDef
+stmt ===> declarationStmt
+stmt ===> assignmentStmt
+stmt ===> ifStmt
+stmt ===> ioStmt
+stmt ===> funcCallStmt
+functionDef ===> FUNCTION SQO parameter_list SQC ASSIGNOP FUNID SQO parameter_list SQC stmtsAndFunctionDefs END SEMICOLON
+parameter_list ===> type ID remainingList
+parameter_list ===> null
+type ===> INT
+type ===> REAL
+type ===> STRING
+type ===> MATRIX
+remainingList ===> COMMA parameter_list
+remainingList ===> null
+declarationStmt ===> type var_list SEMICOLON
+var_list ===> ID more_ids
+more_ids ===> COMMA var_list
+more_ids ===> null
+assignmentStmt ===> leftHandSide1 ASSIGNOP rightHandSide1 SEMICOLON
+assignmentStmt ===> leftHandSide2 ASSIGNOP rightHandSide2 SEMICOLON
+leftHandSide1 ===> ID
+leftHandSide2 ===> SQO var_list SQC
+rightHandSide2 ===> functionCall
+rightHandSide2 ===> sizeofexpr
+rightHandSide1 ===> arithmeticExpression
+rightHandSide1 ===> sizeofexpr
+sizeofexpr ===> SIZE ID
+funcCallStmt ===> functionCall SEMICOLON
+functionCall ===>  FUNID OP var_list2 CL
+var_list2 ===> var more_ids2
+var_list2 ===> null
+more_ids2 ===> COMMA var_list2
+more_ids2 ===> null
+ifStmt ===> IF OP booleanExpression CL stmt otherStmts xifstmt
+xifstmt ===> ELSE stmt otherStmts ENDIF SEMICOLON
+xifstmt ===> ENDIF SEMICOLON
+otherStmts ===> stmt otherStmts
+otherStmts ===> null
+ioStmt ===> READ OP ID CL SEMICOLON
+ioStmt ===> PRINT OP ID CL SEMICOLON
+arithmeticExpression ===> arithmeticExpression2 arithmetic1
+arithmetic1 ===> operator1 arithmeticExpression2 arithmetic1
+arithmetic1 ===> null
+operator1 ===> PLUS
+operator1 ===> MINUS
+arithmeticExpression2 ===> something arithmetic2
+arithmetic2 ===> operator2 something arithmetic2
+arithmetic2 ===> null
+operator2 ===> MUL
+operator2 ===> DIV
+something ===> OP arithmeticExpression CL
+something ===> var
+something ===> functionCall
+booleanExpression ===> OP booleanExpression CL logicalOp1 OP booleanExpression CL
+booleanExpression ===> logicalOp2 OP booleanExpression CL
+booleanExpression ===> cons_var relationalOp cons_var
+cons_var ===> ID svar
+cons_var ===> NUM
+cons_var ===> RNUM
+logicalOp1 ===> AND
+logicalOp1 ===> OR
+logicalOp2 ===> NOT
+relationalOp ===> LT
+relationalOp ===> LE
+relationalOp ===> EQ
+relationalOp ===> GT
+relationalOp ===> NE
+relationalOp ===> GE
+matrix ===> SQO rows SQC
+rows ===> row rows_temp
+rows_temp ===> SEMICOLON rows
+rows_temp ===> null
+row ===> NUM more_vals
+more_vals ===> COMMA row
+more_vals ===> null
+var ===> ID svar
+var ===> NUM
+var ===> RNUM
+var ===> STR
+var ===> matrix
+svar ===> SQO NUM COMMA NUM SQC
+svar ===> null

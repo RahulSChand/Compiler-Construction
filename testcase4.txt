@@ -1,0 +1,8 @@
+_main[]
+	print(b);
+	print(a);
+	print(c);
+	print(d);
+	a=5;
+	c=10;
+end
