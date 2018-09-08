@@ -1,5 +1,6 @@
 #include "ast.h"
-
+//rahul chand
+//2015A7PS0163P
 
 node_ast* create_node_ast(int children,int tk,int is_leaf,node_ast* parent,int line_number){
   node_ast* curr=(node_ast*)malloc(sizeof(node_ast));
@@ -11,7 +12,29 @@ node_ast* create_node_ast(int children,int tk,int is_leaf,node_ast* parent,int l
   int i=0;
   curr->parent=parent;
   curr->struct_arith=(struct arith*)malloc(sizeof(struct arith));
+  curr->struct_arith->node=NULL;
+  curr->struct_arith->all_tuple=NULL;
   curr->sibling=NULL;
+  ast_total++;
+  if (children==0){
+    if (curr->tk==ID)
+    {
+      printf("%s\n",curr->entry);
+    }
+    if (curr->tk==INT)
+    {
+      printf("%d\n",curr->val_int);
+    }
+    if (curr->tk==RNUM){
+        printf("%f\n",curr->val_float);
+    }
+  }
+  else{
+      char p1[20];
+      get_string(curr->tk,p1);printf("%s\n",p1);
+  }
+
+
   if (is_leaf==1){curr->children=NULL;return curr;}
   curr->children=(children_ast*)malloc(sizeof(children_ast));
   children_ast* iter=curr->children;
@@ -213,7 +236,7 @@ node_ast* step(node_tree* curr_node,node_ast* parent,node_ast* inh){
       children_node* children_node_var=curr_node->head;
       int line_number=children_node_var->child->lex->line_no;
 
-      printf("variable on left: %s %d\n",children_node_var->child->lex->var_name,line_number);
+      //printf("variable on left: %s %d\n",children_node_var->child->lex->var_name,line_number);
 
       node_ast* curr=create_node_ast(0,ID,1,parent,line_number);
       strcpy(curr->entry,children_node_var->child->lex->var_name);
@@ -349,6 +372,7 @@ node_ast* step(node_tree* curr_node,node_ast* parent,node_ast* inh){
       node_ast* curr=create_node_ast(1,READ,0,parent,-1);
       int line_number=children_node_var->child->lex->line_no;
       curr->children->node=create_node_ast(0,ID,1,curr,line_number);
+
       strcpy(curr->children->node->entry,children_node_var->child->lex->var_name);
       return curr;
     }
@@ -448,7 +472,7 @@ node_ast* step(node_tree* curr_node,node_ast* parent,node_ast* inh){
     if (left==booleanExpression && right==0){
 
       children_node* children_node_var=curr_node->head->next;
-      node_ast* curr=create_node_ast(2,children_node_var->next->next->child->sym,0,parent,-1);
+      node_ast* curr=create_node_ast(2,children_node_var->next->next->child->head->child->sym,0,parent,-1);
 
       curr->children->node=step(children_node_var->child,curr,NULL);
       children_node_var=children_node_var->next->next->next->next;
@@ -465,9 +489,9 @@ node_ast* step(node_tree* curr_node,node_ast* parent,node_ast* inh){
     if (left==booleanExpression && right==2){
 
       children_node* children_node_var=curr_node->head;
-      node_ast* curr=create_node_ast(2,children_node_var->next->child->sym,0,parent,-1);
+      node_ast* curr=create_node_ast(2,children_node_var->next->child->head->child->sym,0,parent,-1);
       curr->children->node=step(children_node_var->child,curr,NULL);
-      children_node_var=children_node_var->next;
+      children_node_var=children_node_var->next->next;
       curr->children->next->node=step(children_node_var->child,curr,NULL);
       return curr;
     }

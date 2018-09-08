@@ -1,10 +1,16 @@
 // RAHUL SHIV CHAND
 // 2015A7PS0163P
-#include "symbol_table.h"
+#include "codeGen.h"
+
+int ast_total=0;
 
 int main(int argc,char* argv[]){
 
   int option;
+
+  printf("LEVEL 3: AST/SEMANTIC RULES/INTERMEDIATE CODE/CODE GENERATION MODEULS WORK\n");
+
+
 
   FILE* fp=fopen("my_grammar.txt","r");
   grammar* G=grammar_from_file(fp);
@@ -25,24 +31,26 @@ int main(int argc,char* argv[]){
   push(END_MARKER,s);push(mainFunction,s);
 
   FILE* fp_write=fopen("out.txt","w");
-
+  symbol_table* n;
   node_ast* root_ast;
   error_node* e_node;
 
+  int parse_treechild=0;
+  int compressionsize=0;
+  option=100;
   int phase2=1;
+  all_return* ret;
+  while(option!=0){
 
-  while(option!=-1){
-
-  printf("SELECT OPTION, PRESS -1 TO EXIT\n");
+  printf("SELECT OPTION, PRESS 0 TO EXIT\n");
   scanf("%d",&option);
 
 
 
   if (option==1){
-    fp2=(FILE*)removeComments("c2.txt","clean_code.txt");
+    fp2=(FILE*)removeComments(argv[1],"clean_code.txt");
     print_file_console(fp2);
-  }
-  if (option==2){
+
     FILE* fp3=fopen("clean_code.txt","r");
 
     if (fp3!=NULL){
@@ -62,7 +70,9 @@ int main(int argc,char* argv[]){
 
     printf("\n END OF LEXER TOKEN PRINTING PROCESS .......... \n");
   }
-  if (option==3){
+
+
+  if (option==2){
 
     printf("FIRST AND FOLLOW SET AUTOMATED: USING FUNCTIONS first() and follow()\n");
 
@@ -80,18 +90,36 @@ int main(int argc,char* argv[]){
       print_errors_parser(error2,G);
       printf("----END OF ERRORS-----\n");
     }
-  }
-  if (option==4){
+
+
 
     printf("\n CREATING PARSE TREE.........\n");
 
     create_file(root,1,fp_write);
 
+
+
     printf("PARSE TREE Successfully CREATED \n");
   }
-  if (option==5){
+  if (option==3){
 
-    if (phase2==1){root_ast=step(root,NULL,NULL);}
+    if (phase2==1){
+
+
+      printf("Tree printing starting \n");
+      root_ast=step(root,NULL,NULL);
+
+
+
+
+      parse_treechild=total_nodes(root);
+      compressionsize=ast_total;
+      printf("Tree printed \n");
+
+
+      //printf("Parse tree number of nodes: %d   Memory allocated %d\n",parse_treechild,parse_treechild*sizeof(node_tree));
+      //printf("AST number of nodes: %d          Memory allocated %d\n",compressionsize,compressionsize*sizeof(node_ast));
+    }
     else{
 
       printf("Cannot continue to semantic phase due to syntatic error in code\n");
@@ -102,6 +130,78 @@ int main(int argc,char* argv[]){
 
 
   }
+  if (option==4){
+
+    if (phase2==1){
+
+      long int a1=parse_treechild*sizeof(node_tree);
+      long int a2=compressionsize*sizeof(node_ast);
+      printf("Parse tree number of nodes: %d   Memory allocated %lu\n",parse_treechild,a1);
+      printf("AST number of nodes: %d          Memory allocated %lu\n",compressionsize,a2);
+
+      printf("Compression : %f\n",(float)a1/a2);
+
+    }
+    else{
+
+      printf("Cannot continue to semantic phase due to syntatic error in code\n");
+      break;
+    }
+
+  }
+
+
+  if (option==5)
+  {
+
+    if (phase2==1){
+    ret=symbol_function_all(root_ast);
+    print_symbol_table(ret->t,1,NULL);
+  }
+  }
+
+  if (option==6){
+    if (error2->head!=NULL){
+    printf(" Parser detected errors \n");
+    printf("...Printing errors.....\n");
+    print_errors_parser(error2,G);
+    printf("----END OF ERRORS-----\n");
+    }
+    else{
+      semantic_errors(ret->e);
+    }
+  }
+
+  if (option==7){
+    n=return_main(ret->t,root_ast);
+      arith* tmp=inter_main(root_ast,NULL);
+
+      printf("Intermediate code genearted Successfully\n");
+      file_print(argv[2],tmp,n);
+  }
+
+  /*
+  if (option==7)
+  {
+
+    n=return_main(ret->t,root_ast);
+    print_symbol_table(n);
+  }
+
+  if (option==8){
+    arith* tmp=inter_main(root_ast,NULL);
+    file_print("please.txt",tmp,n);
+  }*/
+
+
+
+
+
+
+
+
+
+  /*
   if (option==6){
 
     if (phase2==1){e_node=symbol_function_all(root_ast);}
@@ -118,6 +218,28 @@ int main(int argc,char* argv[]){
     }
   }
 
+  if (option==9){
+
+  }
+
+
+  if (option==8){
+    if (phase2==1){
+      printf("we did something\n");
+
+      arith* tmp=inter_main(root_ast,NULL);
+      list_node_tuple* tmp2=tmp->all_tuple;
+      if (tmp2==NULL){
+        printf("this is null\n");
+      }
+
+      while(tmp2!=NULL){
+        print_tuple(tmp2->curr_tuple);
+        tmp2=tmp2->next;
+      }
+    }
+  }
+  */
 }
 
   return 0;

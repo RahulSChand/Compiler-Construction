@@ -1,4 +1,8 @@
 #include "parser.h"
+//rahul chand
+//2015A7PS0163P
+
+extern int ast_total;
 
 struct node_ast{
   symbol tk;

@@ -10,6 +10,7 @@
 
 tk_lex* recovery_node2(head_list* error,int line_no,int mode,char* string,symbol on_stack,symbol stream,grammar* g);
 
+int total_nodes(node_tree* t);
 
 void print_errors_parser(head_list* h,grammar* G);
 

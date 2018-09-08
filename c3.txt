@@ -12,7 +12,7 @@ _main[]
 	print(c);
 	print(d);
 	print(m);
-end
+end;
 
 #Above code is syntactically and semantically correct
 #Your compiler must have equivalent template for print(m) 

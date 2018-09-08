@@ -6,6 +6,22 @@ int num_non_terminals=45;
 int null_number=84;
 int end_marker=85;
 //checked
+
+int total_nodes(node_tree* t){
+  if (t==NULL){return 0;}
+  int x=0;
+  int i=0;
+  children_node* c=t->head;
+  for(;i<t->len;i++){
+    x=x+total_nodes(c->child);
+    c=c->next;
+  }
+  return x+1;
+}
+
+
+
+
 symbol get_symbol(char* token){
   if (strcmp(token,"xstmt")==0){return xstmt;}
   if (strcmp(token,"xifstmt")==0){return xifstmt;}

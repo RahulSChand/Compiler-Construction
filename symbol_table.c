@@ -1,4 +1,6 @@
 #include "symbol_table.h"
+//rahul chand
+//2015A7PS0163P
 
 
 //We return function as a don't care type.
@@ -257,6 +259,7 @@ if (child->len==2 && (child->tk==AND || child->tk==OR)){
 
 
 void semantic_errors(error_node* curr_error){
+  curr_error=curr_error->next;
   while(curr_error!=NULL){
     printf("%d   %s\n",curr_error->line_number,curr_error->var_name);
     curr_error=curr_error->next;
@@ -278,11 +281,12 @@ error_node* add_error(error_node* curr_error,char* var_name,int error_type,int l
 }
 
 
-symbol_table* create_symbol_table(symbol_table* parent_table){
+symbol_table* create_symbol_table(symbol_table* parent_table,char* scope){
   symbol_table* new_table=(symbol_table*)malloc(sizeof(struct symbol_table));
   new_table->start=NULL;
   new_table->parent=parent_table;
   new_table->curr=NULL;
+  strcpy(new_table->scope,scope);
   return new_table;
 }
 
@@ -383,7 +387,7 @@ int find_in_scope(symbol_table* table,char* name,int which){
   }
 
 }
-error_node* symbol_function_all(node_ast* curr){
+all_return* symbol_function_all(node_ast* curr){
 
 
   printf("TUCK IT BROTHA\n");printf("IT IS IN\n");
@@ -394,7 +398,7 @@ error_node* symbol_function_all(node_ast* curr){
   curr_error1->line_number=-1;
   curr_error1->next=NULL;
   error_node* tmp_error=curr_error1;
-  symbol_table* curr_table=create_symbol_table(NULL);
+  symbol_table* curr_table=create_symbol_table(NULL,"MAIN");
 
   node_ast* child=curr->children->node;
   int x=0;
@@ -421,15 +425,21 @@ error_node* symbol_function_all(node_ast* curr){
     child=child->sibling;
   }
 
-  printf("--------------------------------------Symbol table--------------------\n");
+  //printf("--------------------------------------Symbol table--------------------\n");
 
-  print_symbol_table(curr_table);
+  all_return* ret=(all_return*)malloc(sizeof(all_return));
+  ret->e=tmp_error;
+  ret->t=curr_table;
+  //print_symbol_table(curr_table);
 
-  return curr_error1;
+  return ret;
 }
 
 
 void sizeofmatrix(node_ast* var,symbol_table_entry* ent1){
+
+  printf("--------------------------I WAS CALLED\n");
+
   node_ast* child_node=var->children->node;
   int total=0;
   int r=0;
@@ -566,7 +576,9 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
     int offset_cal=0;
     if (tmp->init==0){
       tmp->init=1;
+
       if (tmp->type_var==STRING || tmp->type_var==MATRIX){
+        //printf("2222222222222222222 %s\n",left->entry);
         offset_cal=1;
       }
     }
@@ -584,9 +596,25 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
     symbol tk=recursive_check(child,curr_error,curr_table,line_number,offset_cal,left->entry);
 
     if (offset_cal==1){
+
+
+
       symbol_table_entry* left_en=return_from_scope(curr_table,left->entry,0);
-      left_en->offset= *offset;
-      *(offset)=*(offset)+left_en->size;
+
+      if (left_en->size!=0)
+
+      {
+        left_en->offset= *offset;
+        *(offset)=*(offset)+left_en->size;
+      }
+      /*
+      else
+      {
+        if (tk==MATRIX && tmo->type_var==MATRIX){
+
+        }
+      }
+      */
 
     }
 
@@ -753,7 +781,7 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
       }
 
     }
-
+//
 
     // assigning to function
 
@@ -790,7 +818,7 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
           curr_error=add_error(curr_error,name_of_function,3,line_number);
           already_there=1;
         }
-        symbol_table* new_symbol_table=create_symbol_table(curr_table);
+        symbol_table* new_symbol_table=create_symbol_table(curr_table," ");
 
 
         //curr_error=add_error(curr_error,name_of_function,2,line_number);
@@ -864,7 +892,7 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
         else{
           add_symbol_table(curr_table,FUNCTION,name_of_function,FUNCTION_attr,new_symbol_table,0,0,0);
         }
-
+        strcpy(new_symbol_table->scope,name_of_function);
         symbol_table_entry* fun_entry=return_from_scope(curr_table,name_of_function,1);
         int i=0;
         fun_entry->param->l=arr1_len;
@@ -914,31 +942,35 @@ void symbol_function(node_ast* curr,symbol_table* curr_table,error_node* curr_er
 
 
 }
-void print_tree(node_ast* child){
-  int l=child->len;
-  char p1[20];
-  if (l==0){
-    get_string(child->tk,p1);printf("%s\n",p1);
-    return;
-  }
-  if (l==1){
-    print_tree(child->children->node);
-    return;
-  }
-  if (l==2){
-    get_string(child->tk,p1);printf("%s\n",p1);
-    print_tree(child->children->node);
-    print_tree(child->children->next->node);
-    return;
-  }
-}
-void print_symbol_table(symbol_table* curr){
+
+
+
+
+void print_symbol_table(symbol_table* curr,int lvl,symbol_table* par){
+
+  //printf("printing symbol table---------------------------------\n");
+
   symbol_table_entry* curr_entry=curr->start;
   while(curr_entry!=NULL){
     char p1[20];get_string(curr_entry->type_var,p1);
-    printf("%s %d %s\n",curr_entry->name_var,curr_entry->offset,p1);
+    if (strcmp(curr_entry->name_var,"type")==0 || strlen(curr_entry->name_var)==0){
+
+        char par_name[20];
+        if (par!=NULL){strcpy(par_name,par->scope);}
+        else{strcpy(par_name,"NUll");}
+        printf("%s           %s             %d           %s       %s   %d     %d\n","type mismatch",curr->scope,lvl,par_name,"not applicable",curr_entry->size,curr_entry->offset);
+
+    }
+    else{
+      char par_name[20];
+      if (par!=NULL){strcpy(par_name,par->scope);}
+      else{strcpy(par_name,"NUll");}
+      char p1[20];get_string(curr_entry->type_var,p1);
+      printf("%s               %s             %d          %s       %s   %d     %d\n",curr_entry->name_var,curr->scope,lvl,par_name,p1,curr_entry->size,curr_entry->offset);
+    }
+
     if (curr_entry->next_table!=NULL){
-      print_symbol_table(curr_entry->next_table);
+      print_symbol_table(curr_entry->next_table,lvl++,curr);
     }
     curr_entry=curr_entry->next_entry;
   }

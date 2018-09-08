@@ -1,0 +1,42 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+int dfs(vector<int> adjList[],bool visited[],int startPos,int* odd,int* even,int level){
+    if (level%2==0){*even=*even+1;}
+    else{*odd=*odd+1;}
+    //cout<<*even<<" "<<*odd<<endl;
+    visited[startPos] = true;
+    for(int i=0;i<adjList[startPos].size();i++){
+        int nextPos = adjList[startPos][i];
+        if (visited[nextPos]==false){
+            dfs(adjList,visited,nextPos,odd,even,level+1);
+        }
+    }
+}
+
+int main() {
+	int n;
+	cin>>n;
+
+	for(int k=0;k<n;k++){
+	    int num;
+	    cin>>num;
+
+	    vector<int> adjList[num];
+	    bool visited[num];
+	    for(int i=0;i<(num-1);i++){
+	        int x;int y;
+	        cin>>x>>y;
+	        adjList[x-1].push_back(y-1);
+	        adjList[y-1].push_back(x-1);
+	    }
+	int even=0;
+	int odd=0;
+	dfs(adjList,visited,0,&odd,&even,0);
+
+	long ans = (even*(even-1))/2  + (odd*(odd-1))/2;
+	cout<<ans<<endl;
+	}
+
+	return 0;
+}df
